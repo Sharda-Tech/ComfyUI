@@ -16,3 +16,4 @@ web/extensions/*
 !web/extensions/core/
 result.json
 color_output.txt
+container_logs.txt
