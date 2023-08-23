@@ -106,9 +106,11 @@ def run_prompt(job):
         im_file = io.BytesIO()
         image.save(im_file, format="JPEG")
         im_bytes = im_file.getvalue()  # im_bytes: image in binary format.
-        im_b64 = base64.b64encode(im_bytes)
-        im_b64 = str(im_b64) 
-        data['lama'] = im_b64
+        im_b64 = base64.b64encode(im_bytes).decode('utf-8')
+        if base64_encoded.startswith('b') or base64_encoded.startswith('B'):
+            base64_encoded = base64_encoded[1:]
+        # im_b64 = str(im_b64) 
+        data['lama'] = base64_encoded
         
         
     if prompt_text != "None":
