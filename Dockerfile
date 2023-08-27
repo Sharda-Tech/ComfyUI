@@ -32,6 +32,8 @@ RUN python3.9 -m pip install scikit-image
 #RUN cd ./custom_nodes/comfy_controlnet_preprocessors && python3.9 install.py && cd ../
 RUN cd ./custom_nodes/was-node-suite-comfyui/ && python3.9 -m pip install -r requirements.txt && cd ../
 RUN cd ./custom_nodes/ComfyUI-Impact-Pack/ && python3.9 install.py && cd ../
+RUN cd ./custom_nodes/comfyui_controlnet_aux/ && python3.9 -m pip install -r requirements.txt && cd ../
+RUN cd ./custom_nodes/comfy_mtb/ && python3.9 -m pip install -r reqs.txt && cd ../
 
 #Give permission to script
 RUN chmod +x ./entrypoint.sh
