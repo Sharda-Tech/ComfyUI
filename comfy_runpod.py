@@ -76,9 +76,6 @@ def run_prompt(job):
     mask_string = job['input']['mask_string_lama']
     prompt_text = job["input"]["prompt"]
     rainbow = job["input"]["rainbow"]
-
-    if job["input"]["prompt"]["3"]["input"].seed == "":
-        job["input"]["prompt"]["3"]["input"].seed = random.randint(1,4294967294)
     
     if image_string != 'None' and mask_string != 'None':
         print("Running this part")
