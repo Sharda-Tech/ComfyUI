@@ -21,9 +21,13 @@ class Conv2d(torch.nn.Conv2d):
     def reset_parameters(self):
         return None
 
-def conv_nd(dims, *args, **kwargs):
+def conv_nd(dims,*args, **kwargs):
+    tile = kwargs.pop('tile', False)
     if dims == 2:
-        return Conv2d(*args, **kwargs)
+        if tile:
+            return Conv2d(*args, **kwargs, padding_mode='circular')
+        else:
+            return Conv2d(*args, **kwargs)
     else:
         raise ValueError(f"unsupported dimensions: {dims}")
 

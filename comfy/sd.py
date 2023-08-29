@@ -1327,7 +1327,7 @@ def calculate_parameters(sd, prefix):
             params += sd[k].nelement()
     return params
 
-def load_checkpoint_guess_config(ckpt_path, output_vae=True, output_clip=True, output_clipvision=False, embedding_directory=None):
+def load_checkpoint_guess_config(ckpt_path, output_vae=True, output_clip=True, output_clipvision=False, embedding_directory=None,tile=False):
     sd = utils.load_torch_file(ckpt_path)
     sd_keys = sd.keys()
     clip = None
@@ -1356,7 +1356,8 @@ def load_checkpoint_guess_config(ckpt_path, output_vae=True, output_clip=True, o
 
     inital_load_device = model_management.unet_inital_load_device(parameters, dtype)
     offload_device = model_management.unet_offload_device()
-    model = model_config.get_model(sd, "model.diffusion_model.", device=inital_load_device)
+    print(model_config)
+    model = model_config.get_model(sd, "model.diffusion_model.", device=inital_load_device,tile=tile)
     model.load_model_weights(sd, "model.diffusion_model.")
 
     if output_vae:

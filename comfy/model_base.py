@@ -12,14 +12,13 @@ class ModelType(Enum):
     V_PREDICTION = 2
 
 class BaseModel(torch.nn.Module):
-    def __init__(self, model_config, model_type=ModelType.EPS, device=None):
+    def __init__(self, model_config, model_type=ModelType.EPS, device=None, tile=False):
         super().__init__()
-
         unet_config = model_config.unet_config
         self.latent_format = model_config.latent_format
         self.model_config = model_config
         self.register_schedule(given_betas=None, beta_schedule="linear", timesteps=1000, linear_start=0.00085, linear_end=0.012, cosine_s=8e-3)
-        self.diffusion_model = UNetModel(**unet_config, device=device)
+        self.diffusion_model = UNetModel(**unet_config, device=device,tile=tile)
         self.model_type = model_type
         self.adm_channels = unet_config.get("adm_in_channels", None)
         if self.adm_channels is None:
@@ -130,8 +129,8 @@ def unclip_adm(unclip_conditioning, device, noise_augmentor, noise_augment_merge
     return adm_out
 
 class SD21UNCLIP(BaseModel):
-    def __init__(self, model_config, noise_aug_config, model_type=ModelType.V_PREDICTION, device=None):
-        super().__init__(model_config, model_type, device=device)
+    def __init__(self, model_config, noise_aug_config, model_type=ModelType.V_PREDICTION, device=None,tile=False):
+        super().__init__(model_config, model_type, device=device,tile=tile)
         self.noise_augmentor = CLIPEmbeddingNoiseAugmentation(**noise_aug_config)
 
     def encode_adm(self, **kwargs):
@@ -144,8 +143,8 @@ class SD21UNCLIP(BaseModel):
 
 
 class SDInpaint(BaseModel):
-    def __init__(self, model_config, model_type=ModelType.EPS, device=None):
-        super().__init__(model_config, model_type, device=device)
+    def __init__(self, model_config, model_type=ModelType.EPS, device=None,tile=False):
+        super().__init__(model_config, model_type, device=device,tile=tile)
         self.concat_keys = ("mask", "masked_image")
 
 def sdxl_pooled(args, noise_augmentor):
@@ -155,8 +154,8 @@ def sdxl_pooled(args, noise_augmentor):
         return args["pooled_output"]
 
 class SDXLRefiner(BaseModel):
-    def __init__(self, model_config, model_type=ModelType.EPS, device=None):
-        super().__init__(model_config, model_type, device=device)
+    def __init__(self, model_config, model_type=ModelType.EPS, device=None,tile=False):
+        super().__init__(model_config, model_type, device=device,tile=tile)
         self.embedder = Timestep(256)
         self.noise_augmentor = CLIPEmbeddingNoiseAugmentation(**{"noise_schedule_config": {"timesteps": 1000, "beta_schedule": "squaredcos_cap_v2"}, "timestep_dim": 1280})
 
@@ -182,8 +181,8 @@ class SDXLRefiner(BaseModel):
         return torch.cat((clip_pooled.to(flat.device), flat), dim=1)
 
 class SDXL(BaseModel):
-    def __init__(self, model_config, model_type=ModelType.EPS, device=None):
-        super().__init__(model_config, model_type, device=device)
+    def __init__(self, model_config, model_type=ModelType.EPS, device=None,tile=False):
+        super().__init__(model_config, model_type, device=device,tile=tile)
         self.embedder = Timestep(256)
         self.noise_augmentor = CLIPEmbeddingNoiseAugmentation(**{"noise_schedule_config": {"timesteps": 1000, "beta_schedule": "squaredcos_cap_v2"}, "timestep_dim": 1280})
 
